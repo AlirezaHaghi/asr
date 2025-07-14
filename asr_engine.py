@@ -7,7 +7,9 @@ warnings.filterwarnings("ignore", message="Using custom `forced_decoder_ids`")
 pipe = pipeline(
     "automatic-speech-recognition",
     model="jacktol/whisper-medium.en-fine-tuned-for-ATC",
-    device=0
+    device=0,
+    chunk_length_s=30,
+    stride_length_s=5,
 )
 
 def transcribe(src_path: str):
