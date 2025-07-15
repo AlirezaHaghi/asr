@@ -15,3 +15,7 @@ dependencies = [
 [[tool.uv.index]]
 name = "pytorch-cu118"
 url = "https://download.pytorch.org/whl/cu118"
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple "
