@@ -1,0 +1,4 @@
+datasets
+torchaudio
+tqdm
+transformers
