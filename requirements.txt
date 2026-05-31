@@ -1,7 +1,9 @@
-# Use PyPI as main index, add PyTorch as extra index
---extra-index-url https://download.pytorch.org/whl/cu118
-torch==2.7.1
-torchaudio==2.7.1
-transformers==4.41.2
-datasets==2.19.1
-tqdm==4.66.4
+torch>=2.0.0 --index-url https://download.pytorch.org/whl/cu118
+torchaudio>=2.0.0 --index-url https://download.pytorch.org/whl/cu118
+transformers>=4.35.0
+datasets>=2.14.0
+librosa>=0.10.0
+soundfile
+jiwer
+silero-vad
+tqdm
