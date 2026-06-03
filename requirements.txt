@@ -1,8 +1,3 @@
-# ATC-ASR Requirements
-# Python 3.10+
-# نصب با GPU:  pip install -r requirements.txt
-# نصب بدون GPU: pip install -r requirements.txt (torch خودکار CPU می‌شود)
-
 torch>=2.0.0
 transformers>=4.35.0
 datasets>=2.14.0

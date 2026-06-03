@@ -1,18 +1,4 @@
-"""
-evaluate.py — Benchmark روی ATCO2-test-set-1h
-------------------------------------------------
-اجرا:
-  python evaluate.py
-
-خروجی‌ها (در پوشه eval_output/):
-  benchmark_results.json   ← WER/CER + S/D/I دو مدل
-  predictions_run1.json    ← خروجی مدل ۱
-  predictions_run2.json    ← خروجی مدل ۲
-  error_analysis.txt       ← ۲۰+ نمونه دسته‌بندی‌شده
-"""
-
 import json
-import os
 import time
 from collections import Counter
 from pathlib import Path
@@ -25,7 +11,6 @@ from jiwer import wer, cer, process_words
 from asr_engine import get_pipe
 from text_normalizer import normalize_for_wer
 
-# ── تنظیمات ──────────────────────────────────────────────────────────────────
 OUTPUT_DIR = Path("eval_output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -36,31 +21,21 @@ RUNS = [
         "beam_size": 5,
     },
     {
-        # مقایسه با beam_size=1 (greedy) روی همان مدل — سریع‌تر، برای نشان دادن تفاوت
         "name": "jacktol-whisper-medium.en-ATC (beam=1, greedy)",
         "model_id": "jacktol/whisper-medium.en-fine-tuned-for-ATC",
         "beam_size": 1,
     },
 ]
 
-# ── بارگذاری دیتاست ───────────────────────────────────────────────────────────
+
 def load_atco2():
-    print("بارگذاری ATCO2-test-set-1h از HuggingFace...")
     ds = load_dataset("Jzuluaga/atco2_corpus_1h", split="test", trust_remote_code=True)
-    print(f"  {len(ds)} نمونه بارگذاری شد")
     return ds
 
 
-# ── inference روی یک run ─────────────────────────────────────────────────────
 def run_inference(dataset, run_cfg: dict) -> list[dict]:
     model_id = run_cfg["model_id"]
     beam_size = run_cfg["beam_size"]
-    name = run_cfg["name"]
-
-    print(f"\n{'='*55}")
-    print(f"مدل: {name}")
-    print(f"دستگاه: {'GPU' if torch.cuda.is_available() else 'CPU'}")
-    print(f"{'='*55}")
 
     pipe = get_pipe(model_id)
     records = []
@@ -103,13 +78,12 @@ def run_inference(dataset, run_cfg: dict) -> list[dict]:
 
         if (i + 1) % 50 == 0:
             so_far = np.mean([r["wer"] for r in records])
-            print(f"  [{i+1}/{len(dataset)}] WER تاکنون: {so_far:.2%}")
+            print(f"[{run_cfg['name']}] {i+1}/{len(dataset)}  WER={so_far:.2%}")
 
-    print(f"  زمان کل: {time.time()-t_total:.0f}s")
+    print(f"[{run_cfg['name']}] done in {time.time()-t_total:.0f}s")
     return records
 
 
-# ── محاسبه S/D/I ─────────────────────────────────────────────────────────────
 def compute_sdi(records: list[dict]) -> dict:
     S = D = I = H = N = 0
     for r in records:
@@ -131,7 +105,6 @@ def compute_sdi(records: list[dict]) -> dict:
     }
 
 
-# ── تحلیل خطا ────────────────────────────────────────────────────────────────
 CALLSIGN_AIRLINES = {
     "lufthansa","swiss","iberia","ryanair","easyjet","delta","united",
     "american","british","air france","alitalia","klm","turkish",
@@ -153,7 +126,6 @@ def categorize(word: str) -> str:
 
 def extract_errors(records: list[dict], n: int = 30) -> list[dict]:
     errors = []
-    # بدترین نمونه‌ها اول
     for rec in sorted(records, key=lambda r: r["wer"], reverse=True):
         if len(errors) >= n: break
         ref_words = rec["reference"].split()
@@ -179,7 +151,7 @@ def extract_errors(records: list[dict], n: int = 30) -> list[dict]:
                 errors.append({
                     "id": rec["id"], "type": "D",
                     "category": categorize(rw),
-                    "ref_word": rw, "hyp_word": "[حذف]",
+                    "ref_word": rw, "hyp_word": "[deleted]",
                     "ref_sentence": rec["reference"],
                     "hyp_sentence": rec["hypothesis"],
                 })
@@ -190,22 +162,21 @@ def write_error_report(errors: list[dict], path: Path):
     with open(path, "w", encoding="utf-8") as f:
         f.write("ATC-ASR Error Analysis\n")
         f.write("=" * 60 + "\n\n")
-        f.write(f"تعداد کل نمونه: {len(errors)}\n\n")
+        f.write(f"samples: {len(errors)}\n\n")
 
         cats = Counter(e["category"] for e in errors)
-        f.write("توزیع دسته‌بندی:\n")
+        f.write("categories:\n")
         for cat, n in cats.most_common():
             f.write(f"  {cat:<15}: {n}\n")
 
         f.write("\n" + "=" * 60 + "\n\n")
         for e in errors:
-            f.write(f"[{e['type']}] دسته: {e['category']}\n")
+            f.write(f"[{e['type']}] {e['category']}\n")
             f.write(f"  REF: {e['ref_sentence']}\n")
             f.write(f"  HYP: {e['hyp_sentence']}\n")
-            f.write(f"  خطا: '{e['ref_word']}' → '{e['hyp_word']}'\n\n")
+            f.write(f"  error: '{e['ref_word']}' -> '{e['hyp_word']}'\n\n")
 
 
-# ── main ──────────────────────────────────────────────────────────────────────
 def main():
     dataset = load_atco2()
     summary = []
@@ -213,7 +184,6 @@ def main():
     for i, run in enumerate(RUNS, 1):
         records = run_inference(dataset, run)
 
-        # ذخیره predictions
         pred_path = OUTPUT_DIR / f"predictions_run{i}.json"
         with open(pred_path, "w", encoding="utf-8") as f:
             json.dump(records, f, ensure_ascii=False, indent=2)
@@ -234,32 +204,22 @@ def main():
         }
         summary.append(result)
 
-        print(f"\nنتایج {run['name']}:")
-        print(f"  WER: {sdi['WER']:.2%} | CER: {sdi['CER']:.2%}")
-        print(f"  S:{sdi['S']} D:{sdi['D']} I:{sdi['I']} (از {sdi['N']} کلمه)")
+        print(f"{run['name']}: WER={sdi['WER']:.2%} CER={sdi['CER']:.2%} "
+              f"S={sdi['S']} D={sdi['D']} I={sdi['I']} N={sdi['N']}")
 
-    # ذخیره خلاصه benchmark
     with open(OUTPUT_DIR / "benchmark_results.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
 
-    # جدول نهایی
-    print(f"\n{'='*65}")
-    print(f"{'مدل':<45} {'WER':>6} {'CER':>6} {'S':>4} {'D':>4} {'I':>4}")
+    print(f"{'Config':<45} {'WER':>6} {'CER':>6} {'S':>4} {'D':>4} {'I':>4}")
     print("-" * 65)
     for s in summary:
         print(f"{s['run_name']:<45} {s['WER']:>6.2%} {s['CER']:>6.2%} "
               f"{s['S']:>4} {s['D']:>4} {s['I']:>4}")
 
-    # Error Analysis از run اول
     with open(OUTPUT_DIR / "predictions_run1.json", encoding="utf-8") as f:
         records1 = json.load(f)
     errors = extract_errors(records1, n=30)
     write_error_report(errors, OUTPUT_DIR / "error_analysis.txt")
-
-    print(f"\n✓ خروجی‌ها در: {OUTPUT_DIR}/")
-    print(f"  benchmark_results.json")
-    print(f"  predictions_run1.json & run2.json")
-    print(f"  error_analysis.txt ({len(errors)} نمونه)")
 
 
 if __name__ == "__main__":

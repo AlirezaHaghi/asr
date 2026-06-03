@@ -1,86 +1,69 @@
 # ATC-ASR Pipeline
 
-سیستم تشخیص گفتار خودکار (ASR) برای حوزه کنترل ترافیک هوایی (ATC)
+ASR for air traffic control using [`jacktol/whisper-medium.en-fine-tuned-for-ATC`](https://huggingface.co/jacktol/whisper-medium.en-fine-tuned-for-ATC).
 
-مدل استفاده‌شده: [`jacktol/whisper-medium.en-fine-tuned-for-ATC`](https://huggingface.co/jacktol/whisper-medium.en-fine-tuned-for-ATC)
-
----
-
-## ساختار پروژه
+## Layout
 
 ```
-├── asr_engine.py        موتور ASR (inference با transformers pipeline)
-├── main.py              پایپ‌لاین تولید — پوشه صوتی → پوشه transcript
-├── evaluate.py          benchmark روی ATCO2-test-set-1h
-├── text_normalizer.py   ATC text normalization
+├── asr_engine.py
+├── main.py
+├── evaluate.py
+├── text_normalizer.py
+├── download_data.py
 ├── requirements.txt
-└── ATC_Benchmark_Colab.py   دفترچه Google Colab
+└── colab/ATC_Benchmark_Colab.ipynb
 ```
 
----
-
-## نصب
+## Install
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+## Usage
 
-## استفاده
-
-### ۱. تبدیل صوت به متن (production)
+### Transcribe a folder
 
 ```bash
 python main.py /path/to/audio_folder
 ```
 
-خروجی در پوشه `audio_folder-transcripts/` ذخیره می‌شود.
+Output goes to `audio_folder-transcripts/`.
 
-### ۲. اجرای benchmark روی ATCO2-1h
+### Benchmark on ATCO2-1h
 
 ```bash
 python evaluate.py
 ```
 
-خروجی‌ها در `eval_output/`:
+Output in `eval_output/`:
 
-| فایل | محتوا |
-|------|-------|
-| `benchmark_results.json` | WER/CER + S/D/I دو مدل/config |
-| `predictions_run1.json` | خروجی کامل مدل ۱ |
-| `predictions_run2.json` | خروجی کامل مدل ۲ |
-| `error_analysis.txt` | ۳۰+ نمونه خطای دسته‌بندی‌شده |
+| File | Contents |
+|------|----------|
+| `benchmark_results.json` | WER/CER + S/D/I for both runs |
+| `predictions_run1.json` | Full predictions (beam=5) |
+| `predictions_run2.json` | Full predictions (beam=1) |
+| `error_analysis.txt` | 30+ categorized errors |
 
-### ۳. اجرا در Google Colab
+### Colab
 
-1. فایل `ATC_Benchmark_Colab.py` را در Colab باز کن
-2. آدرس repo را در `REPO_URL` وارد کن
-3. Runtime → **T4 GPU**
-4. هر cell را به ترتیب اجرا کن
+Open `colab/ATC_Benchmark_Colab.ipynb`, set runtime to T4 GPU, run cells in order.
 
----
+## Hardware
 
-## نیازمندی‌های سخت‌افزاری
+| Environment | Minimum |
+|-------------|---------|
+| Inference (medium) | 8 GB VRAM or CPU |
+| Colab Free | T4 |
+| RAM | 8 GB |
 
-| محیط | حداقل |
-|------|-------|
-| Inference (medium) | 8 GB VRAM یا CPU (کند) |
-| Google Colab Free | T4 — کافی است |
-| RAM سیستم | 8 GB |
+## Dataset
 
----
+[ATCO2-test-set-1h](https://huggingface.co/datasets/Jzuluaga/atco2_corpus_1h)
 
-## دیتاست ارزیابی
-
-[ATCO2-test-set-1h](https://huggingface.co/datasets/Jzuluaga/atco2_corpus_1h) — رایگان، معتبرترین benchmark در حوزه ATC-ASR
-
----
-
-## بازتولید نتایج
+## Reproducibility
 
 ```bash
-# بررسی نسخه‌ها
 python -c "import torch, transformers; print(torch.__version__, transformers.__version__)"
 pip freeze > requirements_exact.txt
 ```

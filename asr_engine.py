@@ -31,7 +31,6 @@ def transcribe(src_path: str, model_id: str = DEFAULT_MODEL, beam_size: int = 5)
             "task": "transcribe",
             "temperature": 0.0,
             "num_beams": beam_size,
-            # FIX: نام درست پارامتر condition_on_prev_text است نه condition_on_prev_tokens
             "condition_on_prev_text": False,
         },
     )
@@ -40,10 +39,6 @@ def transcribe(src_path: str, model_id: str = DEFAULT_MODEL, beam_size: int = 5)
 
 def transcribe_array(audio_array, sampling_rate: int = 16000,
                      model_id: str = DEFAULT_MODEL, beam_size: int = 5) -> str:
-    """
-    دریافت numpy array به جای مسیر فایل
-    FIX: کلید صحیح 'array' است نه 'raw'
-    """
     pipe = get_pipe(model_id)
     result = pipe(
         {"array": audio_array, "sampling_rate": sampling_rate},

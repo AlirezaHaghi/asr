@@ -68,9 +68,9 @@ def process_pipeline(src_dir: str):
 
     ok = sum(1 for l in execution_logs if l["status"] == "success")
     fail = sum(1 for l in execution_logs if l["status"] == "failed")
-    print(f"\nتمام! موفق: {ok} | خطا: {fail}")
-    print(f"خروجی: {dest_path}/")
-    print(f"لاگ: {logs_path}")
+    print(f"done: {ok} ok, {fail} failed")
+    print(f"output: {dest_path}/")
+    print(f"log: {logs_path}")
 
 
 if __name__ == "__main__":
