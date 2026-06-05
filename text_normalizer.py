@@ -13,50 +13,39 @@ def normalize_for_wer(text: str) -> str:
     t = text.lower().strip()
     t = re.sub(r"[,\.!?;:\"\(\)]", " ", t)
     t = re.sub(r"\bniner\b", "nine", t)
+    t = re.sub(r"\balfa\b", "alpha", t)
 
     def expand_fl(m):
-        digits = m.group(1)
-        return "flight level " + " ".join(DIGIT_TO_WORD[d] for d in digits)
+        return "flight level " + " ".join(DIGIT_TO_WORD[d] for d in m.group(1))
+
     t = re.sub(r"\bfl\s*(\d{2,3})\b", expand_fl, t)
 
     def expand_rwy(m):
-        digits = m.group(1)
-        side_map = {"l": "left", "r": "right", "c": "center"}
-        side = side_map.get(m.group(2).lower(), m.group(2)) if m.group(2) else ""
-        words = " ".join(DIGIT_TO_WORD[d] for d in digits)
+        side = {"l": "left", "r": "right", "c": "center"}.get((m.group(2) or "").lower(), "")
+        words = " ".join(DIGIT_TO_WORD[d] for d in m.group(1))
         return ("runway " + words + (" " + side if side else "")).strip()
-    t = re.sub(r"\brwy\s*(\d{1,2})([lrc]?)\b", expand_rwy, t)
 
+    t = re.sub(r"\brwy\s*(\d{1,2})([lrc]?)\b", expand_rwy, t)
     t = re.sub(r"\b(\d+)\b", lambda m: " ".join(DIGIT_TO_WORD[d] for d in m.group(1)), t)
-    t = re.sub(r"\s+", " ", t).strip()
-    return t
+    return re.sub(r"\s+", " ", t).strip()
 
 
 def normalize_for_display(text: str) -> str:
     t = text.strip()
+    num_words = "|".join(WORD_TO_DIGIT.keys())
 
     def compress_fl(m):
-        digits = re.findall(r"\b(" + "|".join(WORD_TO_DIGIT.keys()) + r")\b", m.group(1))
-        if digits:
-            return "FL" + "".join(WORD_TO_DIGIT[d] for d in digits)
-        return m.group(0)
-    t = re.sub(
-        r"\bflight level\s+([a-z ]+?)(?=\s+[a-z]+\b|$)",
-        compress_fl, t, flags=re.IGNORECASE
-    )
+        ds = re.findall(rf"\b({num_words})\b", m.group(1))
+        return "FL" + "".join(WORD_TO_DIGIT[d] for d in ds) if ds else m.group(0)
+
+    t = re.sub(r"\bflight level\s+([a-z ]+?)(?=\s+\w|$)", compress_fl, t, flags=re.IGNORECASE)
 
     def compress_rwy(m):
-        digits = re.findall(r"\b(" + "|".join(WORD_TO_DIGIT.keys()) + r")\b", m.group(1))
-        side_map = {"left": "L", "right": "R", "center": "C"}
-        side = side_map.get(m.group(2).lower(), "") if m.group(2) else ""
-        if digits:
-            return "RWY" + "".join(WORD_TO_DIGIT[d] for d in digits) + side
-        return m.group(0)
-    t = re.sub(
-        r"\brunway\s+([a-z ]+?)\s*(left|right|center)?\b",
-        compress_rwy, t, flags=re.IGNORECASE
-    )
+        ds = re.findall(rf"\b({num_words})\b", m.group(1))
+        side = {"left": "L", "right": "R", "center": "C"}.get((m.group(2) or "").lower(), "")
+        return "RWY" + "".join(WORD_TO_DIGIT[d] for d in ds) + side if ds else m.group(0)
 
+    t = re.sub(r"\brunway\s+([a-z ]+?)\s*(left|right|center)?\b", compress_rwy, t, flags=re.IGNORECASE)
     t = re.sub(r"(\d+)\s+decimal\s+(\d+)", r"\1.\2", t, flags=re.IGNORECASE)
     return t.strip()
 
