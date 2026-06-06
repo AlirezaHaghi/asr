@@ -1,0 +1,42 @@
+{
+  "wer_without_normalization": 0.0898,
+  "wer_with_normalization": 0.0696,
+  "improvement": 0.0201,
+  "examples_before_after": [
+    {
+      "before": "descend flight level one eight zero",
+      "after_wer": "descend flight level one eight zero",
+      "after_display": "descend FL180"
+    },
+    {
+      "before": "squawk four five six seven",
+      "after_wer": "squawk four five six seven",
+      "after_display": "squawk four five six seven"
+    },
+    {
+      "before": "contact one two seven decimal four",
+      "after_wer": "contact one two seven decimal four",
+      "after_display": "contact 127.4"
+    },
+    {
+      "before": "runway two eight left",
+      "after_wer": "runway two eight left",
+      "after_display": "RWY28L"
+    },
+    {
+      "before": "climb to flight level three five zero",
+      "after_wer": "climb to flight level three five zero",
+      "after_display": "climb to FL350"
+    },
+    {
+      "before": "niner thousand feet",
+      "after_wer": "nine thousand feet",
+      "after_display": "niner thousand feet"
+    },
+    {
+      "before": "heading two four zero",
+      "after_wer": "heading two four zero",
+      "after_display": "heading two four zero"
+    }
+  ]
+}

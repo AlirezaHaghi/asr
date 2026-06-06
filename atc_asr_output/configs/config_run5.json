@@ -1,0 +1,12 @@
+{
+  "run_id": "run5",
+  "name": "XLS-R-300M | UWB-ATCC+ATCOSIM (CTC)",
+  "model_id": "Jzuluaga/wav2vec2-xls-r-300m-en-atc-uwb-atcc-and-atcosim",
+  "model_type": "ctc",
+  "vad_config": {
+    "enabled": false
+  },
+  "generate_kwargs": {},
+  "dataset": "Jzuluaga/atco2_corpus_1h",
+  "normalization": "normalize_for_wer"
+}

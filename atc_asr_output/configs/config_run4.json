@@ -1,0 +1,17 @@
+{
+  "run_id": "run4",
+  "name": "fjmgAI-whisper-large-v3-ATC | beam=1",
+  "model_id": "fjmgAI/whisper-large-v3-ATC",
+  "model_type": "whisper",
+  "vad_config": {
+    "enabled": false
+  },
+  "generate_kwargs": {
+    "language": "english",
+    "task": "transcribe",
+    "temperature": 0.0,
+    "num_beams": 1
+  },
+  "dataset": "Jzuluaga/atco2_corpus_1h",
+  "normalization": "normalize_for_wer"
+}

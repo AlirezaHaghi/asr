@@ -1,0 +1,17 @@
+{
+  "run_id": "run1",
+  "name": "jacktol-whisper-large-v3-ATC | beam=5",
+  "model_id": "jacktol/whisper-large-v3-finetuned-for-ATC",
+  "model_type": "whisper",
+  "vad_config": {
+    "enabled": false
+  },
+  "generate_kwargs": {
+    "language": "english",
+    "task": "transcribe",
+    "temperature": 0.0,
+    "num_beams": 5
+  },
+  "dataset": "Jzuluaga/atco2_corpus_1h",
+  "normalization": "normalize_for_wer"
+}

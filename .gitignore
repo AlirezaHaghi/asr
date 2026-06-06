@@ -8,3 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
+
+# atc_asr_output
+node_modules
+package-lock.json
+package.json
+repomix-output.xml

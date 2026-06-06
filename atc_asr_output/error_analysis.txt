@@ -1,0 +1,219 @@
+ATC-ASR Error Analysis
+============================================================
+
+samples: 35
+categories: {'other': 30, 'command': 2, 'number': 3}
+severity: {'minor': 30, 'moderate': 5}
+
+============================================================
+
+[S] #1 | other | minor
+  REF: ready to touchdown
+  HYP: aeroflot nine two touch down
+  error: 'ready' -> 'two'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #2 | other | minor
+  REF: number one golf bravo
+  HYP: level one four three airfrance bravo
+  error: 'number' -> 'level'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #3 | other | minor
+  REF: number one golf bravo
+  HYP: level one four three airfrance bravo
+  error: 'golf' -> 'airfrance'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #4 | other | minor
+  REF: merci au plaisir aurevoir
+  HYP: aeroflot two zero papa
+  error: 'merci' -> 'aeroflot'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #5 | other | minor
+  REF: hotel echo xray
+  HYP: further approach
+  error: 'hotel' -> 'further'
+  note: check audio quality — noise or accent may be the issue
+
+[D] #6 | other | minor
+  REF: hotel echo xray
+  HYP: further approach
+  error: 'xray' -> '[deleted]'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #7 | other | minor
+  REF: good night
+  HYP: is that
+  error: 'good' -> 'is'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #8 | other | minor
+  REF: jetstar nine twelve
+  HYP: eight seven one twelve
+  error: 'jetstar' -> 'seven'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #9 | other | minor
+  REF: beste schone heli oscar zulu
+  HYP: that's the short now heli oscar zulu
+  error: 'beste' -> 'short'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #10 | other | minor
+  REF: c est rentre you may leave frequency merci bonne soiree
+  HYP: three one three your maintaining frequency merci bon sorry
+  error: 'c' -> 'three'
+  note: check audio quality — noise or accent may be the issue
+
+[D] #11 | other | minor
+  REF: c est rentre you may leave frequency merci bonne soiree
+  HYP: three one three your maintaining frequency merci bon sorry
+  error: 'leave' -> '[deleted]'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #12 | other | minor
+  REF: c est rentre you may leave frequency merci bonne soiree
+  HYP: three one three your maintaining frequency merci bon sorry
+  error: 'bonne' -> 'bon'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #13 | command | moderate
+  REF: frequency change approved a toute a l heure
+  HYP: sequency change approved at hotel
+  error: 'frequency' -> 'sequency'
+  note: fixed ATC vocabulary — domain LM may help
+
+[S] #14 | other | minor
+  REF: frequency change approved a toute a l heure
+  HYP: sequency change approved at hotel
+  error: 'a' -> 'at'
+  note: check audio quality — noise or accent may be the issue
+
+[D] #15 | other | minor
+  REF: frequency change approved a toute a l heure
+  HYP: sequency change approved at hotel
+  error: 'a' -> '[deleted]'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #16 | other | minor
+  REF: okay we won t see company quickly to refound no problem technic
+  HYP: okay will oscar company quickly to refound no problem made same mistake thank you
+  error: 'we' -> 'will'
+  note: check audio quality — noise or accent may be the issue
+
+[D] #17 | other | minor
+  REF: okay we won t see company quickly to refound no problem technic
+  HYP: okay will oscar company quickly to refound no problem made same mistake thank you
+  error: 't' -> '[deleted]'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #18 | other | minor
+  REF: okay we won t see company quickly to refound no problem technic
+  HYP: okay will oscar company quickly to refound no problem made same mistake thank you
+  error: 'technic' -> 'you'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #19 | other | minor
+  REF: tower good day rex sixty four sixty four
+  HYP: target airx sixty four six zero
+  error: 'tower' -> 'target'
+  note: check audio quality — noise or accent may be the issue
+
+[D] #20 | other | minor
+  REF: tower good day rex sixty four sixty four
+  HYP: target airx sixty four six zero
+  error: 'day' -> '[deleted]'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #21 | number | moderate
+  REF: tower good day rex sixty four sixty four
+  HYP: target airx sixty four six zero
+  error: 'sixty' -> 'six'
+  note: digits are critical in ATC — consistent normalization required
+
+[S] #22 | number | moderate
+  REF: three five tango hotel alpha whiskey
+  HYP: cleared touch and go hotel alpha whiskey
+  error: 'three' -> 'touch'
+  note: digits are critical in ATC — consistent normalization required
+
+[S] #23 | other | minor
+  REF: a toute three five five
+  HYP: two three five
+  error: 'a' -> 'two'
+  note: check audio quality — noise or accent may be the issue
+
+[D] #24 | other | minor
+  REF: a toute three five five
+  HYP: two three five
+  error: 'toute' -> '[deleted]'
+  note: check audio quality — noise or accent may be the issue
+
+[D] #25 | number | moderate
+  REF: a toute three five five
+  HYP: two three five
+  error: 'five' -> '[deleted]'
+  note: digits are critical in ATC — consistent normalization required
+
+[S] #26 | other | minor
+  REF: say again the departure we for us
+  HYP: thank you the departure is before us
+  error: 'say' -> 'thank'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #27 | other | minor
+  REF: say again the departure we for us
+  HYP: thank you the departure is before us
+  error: 'we' -> 'is'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #28 | command | moderate
+  REF: runway two five cleared touch and go
+  HYP: runway two five csa echo tango
+  error: 'cleared' -> 'csa'
+  note: fixed ATC vocabulary — domain LM may help
+
+[D] #29 | other | minor
+  REF: runway two five cleared touch and go
+  HYP: runway two five csa echo tango
+  error: 'go' -> '[deleted]'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #30 | other | minor
+  REF: we have the traffic in sight rega one zero we leave the control zone schone namittag
+  HYP: we have the traffic in sight india golf one one zero easy control so turn around
+  error: 'rega' -> 'golf'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #31 | other | minor
+  REF: we have the traffic in sight rega one zero we leave the control zone schone namittag
+  HYP: we have the traffic in sight india golf one one zero easy control so turn around
+  error: 'we' -> 'easy'
+  note: check audio quality — noise or accent may be the issue
+
+[D] #32 | other | minor
+  REF: we have the traffic in sight rega one zero we leave the control zone schone namittag
+  HYP: we have the traffic in sight india golf one one zero easy control so turn around
+  error: 'leave' -> '[deleted]'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #33 | other | minor
+  REF: we have the traffic in sight rega one zero we leave the control zone schone namittag
+  HYP: we have the traffic in sight india golf one one zero easy control so turn around
+  error: 'zone' -> 'so'
+  note: check audio quality — noise or accent may be the issue
+
+[S] #34 | other | minor
+  REF: three five five you may leave frequency a toute
+  HYP: three five five lima leaving frequency at two
+  error: 'you' -> 'lima'
+  note: check audio quality — noise or accent may be the issue
+
+[D] #35 | other | minor
+  REF: three five five you may leave frequency a toute
+  HYP: three five five lima leaving frequency at two
+  error: 'leave' -> '[deleted]'
+  note: check audio quality — noise or accent may be the issue
+
