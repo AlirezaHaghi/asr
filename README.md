@@ -10,8 +10,11 @@ ASR for air traffic control using [`jacktol/whisper-medium.en-fine-tuned-for-ATC
 ├── evaluate.py
 ├── text_normalizer.py
 ├── download_data.py
+└── renormalize.py
+└── get_top_20_predictions.py
 ├── requirements.txt
 └── colab/ATC_Benchmark_Colab.ipynb
+
 ```
 
 ## Install
@@ -67,3 +70,12 @@ Open `colab/ATC_Benchmark_Colab.ipynb`, set runtime to T4 GPU, run cells in orde
 python -c "import torch, transformers; print(torch.__version__, transformers.__version__)"
 pip freeze > requirements_exact.txt
 ```
+
+## Renormalizer.py
+
+read the file header
+use it when you've changed the normalizer to update the existing predictions
+
+## get_top_20_predictions.py
+
+Trivial!

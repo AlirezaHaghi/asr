@@ -1,0 +1,15 @@
+{
+  "run_id": "run3",
+  "name": "jacktol-whisper-medium.en-ATC | beam=1 (greedy)",
+  "model_id": "jacktol/whisper-medium.en-fine-tuned-for-ATC",
+  "model_type": "whisper",
+  "vad_config": {
+    "enabled": false
+  },
+  "generate_kwargs": {
+    "temperature": 0.0,
+    "num_beams": 1
+  },
+  "dataset": "Jzuluaga/atco2_corpus_1h",
+  "normalization": "normalize_for_wer"
+}
