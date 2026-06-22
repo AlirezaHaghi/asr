@@ -12,3 +12,4 @@ speechbrain
 torchaudio
 noisereduce
 scipy
+fastapi
