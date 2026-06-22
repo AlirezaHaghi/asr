@@ -1,0 +1,110 @@
+.uploader {
+  width: 100%;
+  min-height: 210px;
+  border: 1.5px dashed var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 48px 32px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.uploader:hover {
+  border-color: var(--border-active);
+  background: #111420;
+}
+
+.uploader:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.uploader--drag {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.uploader--active {
+  border-color: var(--accent);
+  cursor: default;
+  pointer-events: none;
+}
+
+.waveform {
+  display: flex;
+  align-items: center;
+  gap: 3.5px;
+  height: 44px;
+}
+
+.waveform-bar {
+  display: block;
+  width: 3px;
+  height: var(--h, 50%);
+  background: var(--text-muted);
+  border-radius: 2px;
+  transform-origin: center;
+  transition: background 0.25s ease;
+}
+
+.uploader--drag .waveform-bar {
+  background: var(--accent);
+}
+
+.waveform--active .waveform-bar {
+  background: var(--accent);
+  animation: pulse 1.1s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scaleY(1); }
+  30%       { transform: scaleY(0.25); }
+  60%       { transform: scaleY(0.7); }
+}
+
+.uploader-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.uploader-prompt__title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.uploader-prompt__sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.uploader-file {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.uploader-file__name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.uploader-file__size {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
