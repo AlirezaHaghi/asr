@@ -13,3 +13,4 @@ torchaudio
 noisereduce
 scipy
 fastapi
+pydantic-ai

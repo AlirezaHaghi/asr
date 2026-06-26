@@ -5,6 +5,7 @@ export interface TranscriptionResult {
 export async function transcribeAudio(file: File): Promise<TranscriptionResult> {
   const form = new FormData()
   form.append('audio', file)
+
   const res = await fetch('http://localhost:8000/transcribe', {
     method: 'POST',
     body: form,
