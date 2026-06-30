@@ -1,4 +1,5 @@
-const API_BASE = process.env.API_URL ?? 'http://localhost:8000'
+const API_BASE = 'http://localhost:8000'
+// const API_BASE = process.env.API_URL ?? 'http://localhost:8000'
 
 export interface TranscriptionResult {
   transcription: string,

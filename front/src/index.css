@@ -19,6 +19,7 @@
   --error: #D95468;
   --error-dim: rgba(217, 84, 104, 0.08);
   --error-border: rgba(217, 84, 104, 0.2);
+  --success: #3DD68C;
 }
 
 html, body, #root {

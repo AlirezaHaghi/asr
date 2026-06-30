@@ -19,3 +19,5 @@ repomix-output.xml
 
 # ENV
 .env
+
+ref_*.wav
