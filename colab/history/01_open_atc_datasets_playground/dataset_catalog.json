@@ -1,0 +1,30 @@
+[
+  {
+    "label": "ATCO2 one-hour gold test",
+    "hf_id": "Jzuluaga/atco2_corpus_1h",
+    "default_split": "test",
+    "kind": "operational VHF",
+    "status": "used by delivered benchmark"
+  },
+  {
+    "label": "Jacktol combined ATC dataset",
+    "hf_id": "jacktol/ATC-ASR-Dataset",
+    "default_split": "test",
+    "kind": "combined/reorganized",
+    "status": "user-supplied model-card reference; inspect split provenance"
+  },
+  {
+    "label": "ATCOSIM local copy",
+    "hf_id": null,
+    "default_split": null,
+    "kind": "simulated/cleaner speech",
+    "status": "supply a local JSONL manifest or verified repository id"
+  },
+  {
+    "label": "UWB-ATCC local copy",
+    "hf_id": null,
+    "default_split": null,
+    "kind": "real 8 kHz VHF",
+    "status": "supply a local JSONL manifest or verified repository id"
+  }
+]

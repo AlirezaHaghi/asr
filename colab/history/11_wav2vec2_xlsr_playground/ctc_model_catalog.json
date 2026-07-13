@@ -1,0 +1,32 @@
+[
+  {
+    "model_id": "Jzuluaga/wav2vec2-large-960h-lv60-self-en-atc-uwb-atcc-and-atcosim",
+    "training_domain": "UWB-ATCC + ATCOSIM",
+    "reported_wer_note": "10.49% joined evaluation in user-supplied card summary",
+    "verification": "rerun and inspect live card"
+  },
+  {
+    "model_id": "Jzuluaga/wav2vec2-xls-r-300m-en-atc-uwb-atcc-and-atcosim",
+    "training_domain": "UWB-ATCC + ATCOSIM",
+    "reported_wer_note": "16.87% joined evaluation in user-supplied card summary",
+    "verification": "identifier evidenced by delivered notebook"
+  },
+  {
+    "model_id": "Jzuluaga/wav2vec2-large-960h-lv60-self-en-atc-atcosim",
+    "training_domain": "ATCOSIM",
+    "reported_wer_note": "1.67% ATCOSIM; simulated and not operationally comparable",
+    "verification": "rerun and inspect live card"
+  },
+  {
+    "model_id": "Jzuluaga/xls-r-300m-atcosim",
+    "training_domain": "ATCOSIM",
+    "reported_wer_note": "7.36% in user-supplied notes; verify exact repository",
+    "verification": "identifier not live-verified"
+  },
+  {
+    "model_id": "ThaiVanPhat95/wav2vec2-robust-uwb-atcosim-supcon-hybrid-4gram",
+    "training_domain": "UWB + ATCOSIM + synthetic + ATC 4-gram",
+    "reported_wer_note": null,
+    "verification": "interesting robustness candidate; no comparable WER supplied"
+  }
+]
