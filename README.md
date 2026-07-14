@@ -1,115 +1,237 @@
-# ATC-ASR Pipeline
+# ATC ASR pipeline
 
-ASR for air traffic control. The legacy benchmark scripts use
-[`jacktol/whisper-medium.en-fine-tuned-for-ATC`](https://huggingface.co/jacktol/whisper-medium.en-fine-tuned-for-ATC);
-the mode-based API uses its current large-v3 replacement in local mode.
+FastAPI service and evaluation tools for air-traffic-control speech. The API
+supports lightweight demo/remote operation and an optional local GPU stack.
 
-## Backend API
+## Project Structure & Core Components
 
-The FastAPI backend now has three interchangeable modes:
+This project is divided into three main parts:
 
-- `demo` (default): filename-based transcriptions loaded from
-  `audio-samples/result.txt`, with no API or model calls.
-- `remote`: Gemini audio requests through Pydantic AI.
-- `local`: separate GPU models for ATC ASR, English-accent classification,
-  and speaker similarity.
+1. **Web Application (UI & Backend):** 
+   - A modern web app featuring a React frontend (located in the `front/` directory, run using Bun) and a FastAPI backend (`app.py`).
+   - The backend supports three execution modes: `demo`, `remote`, and `local`. 
+   - Most of the core backend implementation, adapters, and services are located in the `services/` folder.
+2. **Batch Processing Script (`main.py`):**
+   - A command-line script used for batch processing and transcribing directories of audio files.
+3. **Mock Data (`audio-samples/`):**
+   - Contains mock data and pre-recorded results used for testing and running the application in `demo` mode.
 
-Start the backend with:
+### Directory Roles & Context
 
-```bash
+- **`colab/`**: Contains Google Colab resources, including notebooks, Colab data, and a `history/` directory containing artifacts and old files that were used for research, experiments, and investigation.
+- **`data/`**: Contains supporting project data, including `glassory.md` which serves as a glossary of terms for air traffic control concepts.
+- **`services/`**: Holds the FastAPI backend modules, transcription/enrichment logic, local models, database integration, and helper scripts.
+
+# how to use this?
+
+## ON DEVELOPMENT AND SCRIPT FOR BATCH PROCCESSING
+
+create a directory which the .wav files exist. the run `uv python main.py`
+
+
+
+
+## ON SERVER WITH BACKEND AND FRONTEND
+
+## FRONTEND
+```powershell
+cd front
+bun install
+bun dev
+```
+use `bun dev --host=0.0.0.0` in sesrver
+application is available on port 3000
+
+
+## Lightweight install: demo or remote
+
+```powershell
 uv sync
 uv run uvicorn app:app --reload
 ```
+if you want to serve on the web:
 
-Set `APP_MODE=demo`, `APP_MODE=remote`, or `APP_MODE=local` in `.env`. See
-[`services/README.md`](services/README.md) for mock filenames, Gemini settings,
-local optional installation, model cards, limitations, and per-file docs. The
-CUDA model dependencies are intentionally not part of the base `uv` project.
+`uv run uvicorn app:app --reload --host=0.0.0.0`
 
-## Layout
+Set `APP_MODE=demo` (the default) or `APP_MODE=remote` in `.env`. A plain
+`uv sync` installs only the web, HTTP, validation, and database dependencies.
+It does **not** install PyTorch, Transformers, SpeechBrain, bitsandbytes, or the
+benchmark packages.
 
-```
-├── asr_engine.py
-├── main.py
-├── evaluate.py
-├── text_normalizer.py
-├── download_data.py
-└── renormalize.py
-└── get_top_20_predictions.py
-├── requirements.txt
-└── colab/ATC_Benchmark_Colab.ipynb
+| Mode | Behavior |
+| --- | --- |
+| `demo` | Reads filename-based fixtures from `audio-samples/result.txt`; no model or API call. |
+| `remote` | Sends audio to the upstream HTTP transcription service and caches its response. |
+| `local` | Runs ATC Whisper, accent classification, speaker comparison, and optional transcript enrichment on local hardware. |
 
-```
+See [services/README.md](services/README.md) for backend details and model
+limitations.
 
-## Install
+## Local NVIDIA GPU install
 
-```bash
-pip install -r requirements.txt
-```
+The `local` extra is intentionally separate and is configured for the official
+PyTorch CUDA 12.8 wheel index on Windows and Linux:
 
-## Usage
-
-### Transcribe a folder
-
-```bash
-python main.py /path/to/audio_folder
+```powershell
+uv sync --extra local
+$env:APP_MODE = "local"
+uv run --extra local uvicorn app:app --reload
 ```
 
-Output goes to `audio_folder-transcripts/`.
+Run those commands only on the local-model host. `uv sync --extra local`
+downloads the AI runtime wheels, and the first local request downloads model
+checkpoints from Hugging Face. The default demo/remote command never selects
+that extra.
 
-### Benchmark on ATCO2-1h
+If the deployment driver requires another PyTorch build, change the explicit
+`pytorch-cu128` index and the matching `tool.uv.sources` entries in
+`pyproject.toml` to an index supported by that host, then run `uv lock` there.
+The official [uv PyTorch guide](https://docs.astral.sh/uv/guides/integration/pytorch/)
+lists the available CUDA indexes. FFmpeg must also be on `PATH` for compressed
+audio.
 
-```bash
-python evaluate.py
+## Surveillance-aware enrichment
+
+Enrichment is off by default. Enable both the Whisper preprocessing prompt and
+the local-LLM postprocessor with:
+
+```dotenv
+APP_MODE=local
+LOCAL_DEVICE=cuda
+ENRICH_USING_SURVEILLANCE_DATA=true
+SURVEILLANCE_DATA_PATH=C:\data\atc-surveillance
+LOCAL_REFINEMENT_MODEL=Qwen/Qwen2.5-7B-Instruct
+LOCAL_LLM_DEVICE=cuda
 ```
 
-Output in `eval_output/`:
+When the flag is false, local Whisper runs with the original generation
+arguments and returns its original stripped text. When it is true:
 
+1. The active callsigns, spoken callsign forms, waypoints, and frequency are
+   converted to a compact transcript-like prompt and passed to Whisper through
+   `prompt_ids`.
+2. A 4-bit NF4
+   [`Qwen/Qwen2.5-7B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct)
+   text-only pass is instructed to remove obvious ASR repetition and reconcile
+   a callsign with an active surveillance candidate. The acceptance guard
+   allows only repetition/filler removal or a callsign change to an exact
+   active spoken form; all other word changes fall back to raw ASR text.
 
-| File                     | Contents                      |
-| ------------------------ | ----------------------------- |
-| `benchmark_results.json` | WER/CER + S/D/I for both runs |
-| `predictions_run1.json`  | Full predictions (beam=5)     |
-| `predictions_run2.json`  | Full predictions (beam=1)     |
-| `error_analysis.txt`     | 30+ categorized errors        |
+For API uploads, set `SURVEILLANCE_DATA_PATH` to one central JSON file or a
+server-side directory. In a directory, context for `sample.wav` may be named either
+`sample.wav.surveillance.json` or `sample.surveillance.json`. A central file is
+keyed by the server-sanitized upload basename (ordinary filenames such as
+`sample.wav` are unchanged):
 
-### Colab
-
-Open `colab/ATC_Benchmark_Colab.ipynb`, set runtime to T4 GPU, run cells in order.
-
-## Hardware
-
-
-| Environment        | Minimum    |
-| ------------------ | ---------- |
-| Inference (medium) | 12 GB VRAM |
-| Colab Free         | T4         |
-| RAM                | 12 GB      |
-
-## Dataset
-
-[ATCO2-test-set-1h](https://huggingface.co/datasets/Jzuluaga/atco2_corpus_1h)
-
-## Reproducibility
-
-```bash
-python -c "import torch, transformers; print(torch.__version__, transformers.__version__)"
-pip freeze > requirements_exact.txt
+```json
+{
+  "schema_version": 1,
+  "recordings": {
+    "sample.wav": {
+      "audio_sha256": "b1f5e8f65cca0c9e1f9f6de47c4c136b11f12f7187f35a50f9f0ce25f1f47f56",
+      "segments": [
+        {
+          "start_seconds": 0.0,
+          "end_seconds": 4.25,
+          "callsigns": [
+            {
+              "icao": "SWR2689",
+              "spoken_forms": [
+                "swiss two six eight nine",
+                "swiss six eight nine"
+              ]
+            }
+          ],
+          "waypoints": ["BIGLU"],
+          "frequency_mhz": 127.35
+        }
+      ]
+    }
+  }
+}
 ```
 
-## Renormalizer.py
+This is an application-specific adapter schema, not native ATCO2 XML. Generate
+it from an authorized ADS-B/Mode-S source and bind each entry to the exact audio
+bytes with lowercase SHA-256. For example, PowerShell's
+`(Get-FileHash sample.wav -Algorithm SHA256).Hash.ToLower()` produces the value.
+The service rejects a filename match whose hash differs, so renaming unrelated
+audio cannot select another recording's context.
 
-```bash
-python renormalizer.py
+The application does not query live surveillance services and does not filter
+the JSON segments itself. The producer must first filter and relevance-order
+callsigns by the utterance timestamp and location. The service reads at most
+the first 64 segments, 32 callsigns, three spoken forms per callsign, and 32
+waypoints, then caps the Whisper prompt at 128 tokens. Do not pass an
+airport-wide or corpus-wide callsign list. Supply proper airline telephony
+variants in `spoken_forms`; an ICAO value without spoken forms is not inserted
+into the Whisper prompt.
+
+### Why a separate sidecar is required
+
+ATCO2 research uses timestamp and location to retrieve likely aircraft, applies
+WFST/lattice callsign boosting, then performs NER and callsign correlation. This
+project is an unvalidated adaptation: it uses soft Whisper decoder context and
+a general text LLM, so the papers' reported improvements do not transfer to
+this implementation. See the primary papers on
+[contextual callsign boosting](https://arxiv.org/abs/2202.03725) and
+[air-surveillance-assisted semi-supervised ASR](https://arxiv.org/abs/2104.03643).
+The official
+[ATCO2 conversion and callsign-expansion tools](https://github.com/idiap/atco2-corpus)
+can be used as the source for an adapter into the JSON schema above.
+
+The Hugging Face
+[`Jzuluaga/atco2_corpus_1h`](https://huggingface.co/datasets/Jzuluaga/atco2_corpus_1h)
+card mentions surveillance metadata in the full ATCO2 corpus, but the hosted
+1-hour schema exposes only audio, text, IDs, and segment timing. The
+[`jacktol/ATC-ASR-Dataset`](https://huggingface.co/datasets/jacktol/ATC-ASR-Dataset)
+used by the current checkpoint exposes only ID, audio, and text. Neither hosted
+table can supply active callsigns at inference time, hence the explicit JSON
+input above.
+
+Hugging Face documents Whisper `prompt_ids` as a way to bias custom vocabulary
+and proper nouns. It is a soft bias, not a constraint. For audio requiring
+Whisper long-form segmentation, the default prompt affects the first segment
+only; the local checkpoint is intended for short, distinct ATC transmissions.
+The Qwen stage sees text and sidecar context, not acoustic features, so it
+cannot listen back to verify the transcript. Enriched output still requires
+human review and must not be used as an unreviewed safety decision.
+
+## Local model memory choice
+
+The refiner is Qwen2.5-7B-Instruct (7.61B parameters, Apache-2.0) loaded through
+bitsandbytes 4-bit NF4. The standard checkpoint download contains about
+14.2 GiB of BF16 weights, but it is quantized while loading rather than kept in
+BF16 GPU memory. Hugging Face documents 4-bit loading as compressing the linear
+layers to 4-bit storage; this leaves substantially more headroom beside the
+roughly 2.9 GiB FP16 Whisper parameter payload on a 20 GiB GPU. This is a
+capacity estimate, not a measured peak. Actual memory depends on audio length,
+prompt length, driver, quantization buffers, and allocator behavior, so verify
+it on the deployment GPU. See the official
+[bitsandbytes integration guide](https://huggingface.co/docs/transformers/main/en/quantization/bitsandbytes).
+
+## Benchmark and legacy scripts
+
+Benchmark-only libraries are another optional extra:
+
+```powershell
+# Evaluation uses the local model and benchmark tools.
+uv sync --extra local --extra benchmark
+uv run --extra local --extra benchmark python evaluate.py
+
+# Recompute metrics without running local inference.
+uv run --extra benchmark python renormalize.py
 ```
 
-read the file header
-use it when you've changed the normalizer to update the existing predictions
+Common commands:
 
-## Get_top_20_predictions.py
+```powershell
+# Transcribe a folder with the legacy script.
+uv run --extra local --extra benchmark python main.py C:\path\to\audio
 
-```bash
-python get_top_20_predictions.py
+# Download the evaluation dataset on a machine intended to hold it.
+uv run --extra benchmark python download_data.py
 ```
 
-to get first 20 aggrigated results of all predictions
+Benchmark output is written under `eval_output/` or `atc_asr_output/`, depending
+on the script. The Colab workflow is in `colab/ATC_Benchmark_Colab.ipynb`.

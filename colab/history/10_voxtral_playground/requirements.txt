@@ -1,0 +1,5 @@
+torch>=2.2
+transformers>=4.54
+accelerate>=0.30
+soundfile>=0.12
+huggingface-hub>=0.20

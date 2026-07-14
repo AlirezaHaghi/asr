@@ -1,0 +1,31 @@
+{
+  "archive_type": "retrospective_reconstruction",
+  "created_on": "2026-07-13",
+  "updated_on": "2026-07-13",
+  "claim_of_contemporaneous_history": false,
+  "generated_results_included": false,
+  "empty_artifact_directories": false,
+  "minimum_notebook_cells": 8,
+  "notice": "Retrospective reconstruction created from the final notebook/report. It is not claimed to be an original timestamped development artifact; generated metrics require rerunning.",
+  "model_card_verification": "live web access unavailable during update; refresh through inspect scripts",
+  "expected_experiments": [
+    "01_open_atc_datasets_playground",
+    "02_dataset_split_leakage_lab",
+    "03_audio_io_resampling",
+    "04_signal_conditioning",
+    "05_atc_text_normalization",
+    "06_hotword_callsign_playground",
+    "07_silero_vad_playground",
+    "08_whisper_playground",
+    "09_directory_batch_transcription",
+    "10_voxtral_playground",
+    "11_wav2vec2_xlsr_playground",
+    "12_cross_family_benchmark",
+    "13_fastconformer_playground",
+    "14_metrics_sdi",
+    "15_alignment_error_taxonomy",
+    "16_normalization_ablation",
+    "17_latency_rtf_profiling",
+    "18_parakeet_canary_playground"
+  ]
+}

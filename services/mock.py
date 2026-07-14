@@ -73,14 +73,15 @@ class MockBackend:
     def verify_speaker(
         self, reference: AudioInput, candidate: AudioInput
     ) -> SpeakerVerificationResult:
-        key = (reference.name, candidate.name)
-        result = MOCK_SPEAKER_RESULTS.get(key)
-        if result is None:
-            pairs = ", ".join(
-                f"{left} + {right}" for left, right in sorted(MOCK_SPEAKER_RESULTS)
+        if reference.name == candidate.name:
+            return SpeakerVerificationResult(
+                same_speaker=True, confidence=1.0, similarity=1.0, threshold=0.25
             )
-            raise ServiceError(
-                f"No speaker mock for '{reference.name} + {candidate.name}'. Available pairs: {pairs}",
-                status_code=404,
+        if reference.name.split('_')[0] == candidate.name.split('_')[0]:
+            return SpeakerVerificationResult(
+                same_speaker=True, confidence=0.84, similarity=0.65, threshold=0.25
             )
-        return result.model_copy(deep=True)
+        else:
+            return SpeakerVerificationResult(
+                same_speaker=False, confidence=0.51, similarity=0.15, threshold=0.25
+            )
