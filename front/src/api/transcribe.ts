@@ -2,9 +2,10 @@ const API_BASE = 'http://localhost:8000'
 // const API_BASE = process.env.API_URL ?? 'http://localhost:8000'
 
 export interface TranscriptionResult {
-  transcription: string,
-  accent?: string,
-  confidence?: number,
+  transcription: string
+  accent: string | null
+  confidence: number | null
+  accent_confidence: number | null
 }
 
 export async function transcribeAudio(file: File): Promise<TranscriptionResult> {

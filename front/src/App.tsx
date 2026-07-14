@@ -13,8 +13,8 @@ export default function App() {
   const [status, setStatus] = useState<Status>('idle')
   const [file, setFile] = useState<File | null>(null)
   const [transcription, setTranscription] = useState('')
-  const [accent, setAccent] = useState<string | undefined>(undefined)
-  const [confidence, setConfidence] = useState<number | undefined>(undefined)
+  const [accent, setAccent] = useState<string | null>(null)
+  const [confidence, setConfidence] = useState<number | null>(null)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
 
@@ -22,8 +22,8 @@ export default function App() {
     setFile(f)
     setStatus('idle')
     setTranscription('')
-    setAccent(undefined)
-    setConfidence(undefined)
+    setAccent(null)
+    setConfidence(null)
     setError('')
   }
 
