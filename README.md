@@ -3,6 +3,25 @@
 FastAPI service and evaluation tools for air-traffic-control speech. The API
 supports lightweight demo/remote operation and an optional local GPU stack.
 
+## Project Structure & Core Components
+
+This project is divided into three main parts:
+
+1. **Web Application (UI & Backend):** 
+   - A modern web app featuring a React frontend (located in the `front/` directory, run using Bun) and a FastAPI backend (`app.py`).
+   - The backend supports three execution modes: `demo`, `remote`, and `local`. 
+   - Most of the core backend implementation, adapters, and services are located in the `services/` folder.
+2. **Batch Processing Script (`main.py`):**
+   - A command-line script used for batch processing and transcribing directories of audio files.
+3. **Mock Data (`audio-samples/`):**
+   - Contains mock data and pre-recorded results used for testing and running the application in `demo` mode.
+
+### Directory Roles & Context
+
+- **`colab/`**: Contains Google Colab resources, including notebooks, Colab data, and a `history/` directory containing artifacts and old files that were used for research, experiments, and investigation.
+- **`data/`**: Contains supporting project data, including `glassory.md` which serves as a glossary of terms for air traffic control concepts.
+- **`services/`**: Holds the FastAPI backend modules, transcription/enrichment logic, local models, database integration, and helper scripts.
+
 # how to use this?
 
 ## ON DEVELOPMENT AND SCRIPT FOR BATCH PROCCESSING
