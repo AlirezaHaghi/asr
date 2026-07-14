@@ -1,0 +1,6 @@
+numpy>=1.26
+soundfile>=0.12
+torch>=2.0
+transformers>=4.35
+accelerate>=0.25
+jiwer>=3.0

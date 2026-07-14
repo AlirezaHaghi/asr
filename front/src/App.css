@@ -13,12 +13,17 @@
 .nav {
   width: 100%;
   margin-bottom: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .brand-mark {
@@ -36,6 +41,44 @@
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
+
+/* ── Tab switcher ── */
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.tab {
+  padding: 7px 18px;
+  border-radius: 7px;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.tab--active {
+  background: var(--border-active);
+  color: var(--text-primary);
+}
+
+.tab:hover:not(.tab--active) {
+  color: var(--text-primary);
+}
+
+/* ── Shared sections ── */
 
 .hero {
   width: 100%;
@@ -91,6 +134,11 @@
 
 .btn-primary:active {
   transform: scale(0.99);
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .status-row {
@@ -171,4 +219,61 @@
   padding: 16px 20px;
   font-size: 14px;
   color: var(--error);
+}
+
+.result-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.result-tag {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(124, 111, 247, 0.18);
+  border-radius: 20px;
+  padding: 3px 12px;
+  white-space: nowrap;
+}
+
+.result-confidence {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 160px;
+}
+
+.result-confidence__label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.result-confidence__track {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.result-confidence__fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.result-confidence__value {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  min-width: 32px;
+  text-align: right;
 }
