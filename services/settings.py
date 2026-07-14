@@ -30,16 +30,29 @@ class Settings:
     default_voice_sample: Path
     local_device: str
     local_speaker_threshold: float
+    enrich_using_surveillance_data: bool
 
 
 def _mode() -> AppMode:
     raw = os.getenv("APP_MODE", AppMode.DEMO.value).strip().lower()
-    print(raw)
     try:
         return AppMode(raw)
     except ValueError as exc:
         choices = ", ".join(mode.value for mode in AppMode)
         raise RuntimeError(f"APP_MODE must be one of: {choices}") from exc
+
+
+def _environment_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    normalized = raw.strip().lower()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    raise RuntimeError(f"{name} must be true or false")
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
@@ -61,6 +74,8 @@ def get_settings() -> Settings:
         ),
         local_device=os.getenv("LOCAL_DEVICE", "cuda"),
         local_speaker_threshold=float(os.getenv("LOCAL_SPEAKER_THRESHOLD", "0.25")),
+        enrich_using_surveillance_data=_environment_flag(
+            "ENRICH_USING_SURVEILLANCE_DATA"
+        ),
     )
-    print(setting)
     return setting
