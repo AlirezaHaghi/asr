@@ -1,9 +1,12 @@
-"""Editable filename-to-result fixtures used by ``APP_MODE=demo``.
+"""Filename-to-result fixtures used by ``APP_MODE=demo``.
 
-Replace or extend these dictionaries when the real mock data is provided. The
-frontend still uploads an audio file; demo mode uses its filename as the lookup
-key and does not inspect or process its bytes.
+The frontend uploads a file from ``audio-samples/samples``. Demo mode matches
+its filename against the transcription blocks in ``audio-samples/result.txt``;
+the audio bytes are intentionally not processed.
 """
+
+import re
+from pathlib import Path
 
 from .models import (
     AudioInput,
@@ -13,20 +16,34 @@ from .models import (
 )
 
 
-MOCK_TRANSCRIPTIONS = {
-    "demo-atc.wav": TranscriptionResult(
-        transcription="Speedbird four two one, descend flight level one two zero.",
-        accent="england",
-        confidence=0.96,
-        accent_confidence=0.91,
-    ),
-    "demo-atc-2.wav": TranscriptionResult(
-        transcription="Tehran approach, Iran Air seven one two passing six thousand feet.",
-        accent="indian",
-        confidence=0.92,
-        accent_confidence=0.78,
-    ),
-}
+MOCK_RESULT_PATH = Path(__file__).parents[1] / "audio-samples" / "result.txt"
+MOCK_AUDIO_DIR = MOCK_RESULT_PATH.parent / "samples"
+MISSING_TRANSCRIPTION = "Transcription is not available in the provided mock data."
+
+
+def _load_transcriptions(
+    path: Path = MOCK_RESULT_PATH,
+) -> dict[str, TranscriptionResult]:
+    blocks = re.split(r"(?:\r?\n){2,}", path.read_text(encoding="utf-8").strip())
+    results: dict[str, TranscriptionResult] = {}
+    for block in blocks:
+        lines = [line.strip() for line in block.splitlines() if line.strip()]
+        if len(lines) < 2 or not lines[0].lower().endswith(".wav"):
+            raise RuntimeError(f"Invalid mock transcription block in {path}: {block!r}")
+        filename, transcription = lines[0], " ".join(lines[1:])
+        if filename in results:
+            raise RuntimeError(f"Duplicate mock transcription for {filename!r}")
+        results[filename] = TranscriptionResult(transcription=transcription)
+
+    for audio_path in MOCK_AUDIO_DIR.glob("*.wav"):
+        results.setdefault(
+            audio_path.name,
+            TranscriptionResult(transcription=MISSING_TRANSCRIPTION),
+        )
+    return results
+
+
+MOCK_TRANSCRIPTIONS = _load_transcriptions()
 
 MOCK_SPEAKER_RESULTS = {
     ("demo-reference.wav", "demo-same-speaker.wav"): SpeakerVerificationResult(

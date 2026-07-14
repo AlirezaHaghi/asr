@@ -9,6 +9,7 @@ type VerifyState = 'idle' | 'loading' | 'done' | 'error'
 export function SpeakerVerify() {
   const [refFile, setRefFile] = useState<File | null>(null)
   const [refState, setRefState] = useState<RefState>('default')
+  const [refError, setRefError] = useState('')
 
   const [verifyFile, setVerifyFile] = useState<File | null>(null)
   const [verifyState, setVerifyState] = useState<VerifyState>('idle')
@@ -19,10 +20,12 @@ export function SpeakerVerify() {
   const handleSetRef = async () => {
     if (!refFile) return
     setRefState('setting')
+    setRefError('')
     try {
       await setVoiceSample(refFile)
       setRefState('set')
-    } catch {
+    } catch (e) {
+      setRefError(e instanceof Error ? e.message : 'Something went wrong.')
       setRefState('default')
     }
   }
@@ -93,6 +96,10 @@ export function SpeakerVerify() {
               <span className="spinner" />
               <span>Uploading reference…</span>
             </div>
+          )}
+
+          {refError && (
+            <div className="result-error">{refError}</div>
           )}
         </div>
 

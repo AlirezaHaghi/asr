@@ -8,6 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+.venv-*
 
 # atc_asr_output
 
@@ -17,7 +18,13 @@ package-lock.json
 package.json
 repomix-output.xml
 
+audio-samples
+
 # ENV
 .env
 
 ref_*.wav
+.models/
+transcriptions.db
+
+colab/ai-only

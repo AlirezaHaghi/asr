@@ -18,7 +18,7 @@ Restart the API after changing a mode or model environment variable.
 | `models.py` | Internal audio value object, public Pydantic results, and service error. |
 | `settings.py` | Reads and validates environment configuration. |
 | `service.py` | Chooses a backend and owns the in-memory reference recording. |
-| `mock.py` | Editable demo filenames and results. |
+| `mock.py` | Loads demo filename/result pairs from `audio-samples/result.txt`. |
 | `remote.py` | The complete, compact Pydantic AI + Gemini implementation. |
 | `database.py` | Remote transcription cache. |
 | `local.py` | Combines the three local results and manages temporary audio files. |
@@ -32,19 +32,28 @@ and remote modes do not need the local-model packages.
 
 ## Demo data
 
-The frontend uploads an ordinary audio file. Only the file's name is used in
-demo mode; its bytes may be empty. Current transcription names are:
+The frontend uploads a recording from `audio-samples/samples`. Only the file's
+name is used in demo mode; its bytes may be empty. `mock.py` loads the matching
+transcription directly from `audio-samples/result.txt`, so result updates do not
+need to be copied into Python code. All WAV recordings in the samples directory
+are valid demo inputs.
 
-- `demo-atc.wav`
-- `demo-atc-2.wav`
+These recordings currently have no entry in `result.txt`, so they return the
+explicit placeholder `Transcription is not available in the provided mock
+data.` until a transcript is supplied:
+
+- `DABI358_Freq_128.25   Modulation_AM   Date_2020-12-16   Time_00-11-54-064   CH_6   Bank_Scan Table J.wav`
+- `MANSOUR41_1399-1-12_20-52-46_124.500000MHz_AM.wav`
 
 The default reference is `demo-reference.wav`. Speaker candidates are:
 
 - `demo-same-speaker.wav`
 - `demo-different-speaker.wav`
 
-Unknown names return HTTP 404 and list available fixtures. Replace the two
-dictionaries in `mock.py` when the project-specific mock data arrives.
+Names that are neither in `result.txt` nor the samples directory return HTTP
+404 and list all available sample filenames.
+Speaker-verification fixtures remain separate because the supplied result file
+contains transcriptions but no speaker-identity labels.
 
 ## Remote Gemini configuration
 
@@ -113,9 +122,7 @@ CommonAccent speech. The card reports 87% test accuracy. Its labels are:
 misspells `southatlandtic`; the placeholder displays it as `south atlantic`.
 
 These are dataset accent categories, not nationality, citizenship, or
-ethnicity. The model's winning log-posterior is exponentiated for
-`accent_confidence`, but it still needs calibration on the application's ATC
-audio.
+ethnicity. The API returns only the selected accent label.
 
 ### Speaker similarity: `local_speaker.py`
 

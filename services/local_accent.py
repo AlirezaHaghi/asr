@@ -34,8 +34,7 @@ def _classifier(device: str):
     )
 
 
-def detect_accent(audio_path: Path, device: str = "cuda") -> tuple[str, float]:
-    _, log_probability, _, labels = _classifier(device).classify_file(str(audio_path))
+def detect_accent(audio_path: Path, device: str = "cuda") -> str:
+    _, _, _, labels = _classifier(device).classify_file(str(audio_path))
     label = str(labels[0]).strip().lower()
-    confidence = float(log_probability.detach().cpu().exp().item())
-    return _DISPLAY_LABELS.get(label, label), confidence
+    return _DISPLAY_LABELS.get(label, label)

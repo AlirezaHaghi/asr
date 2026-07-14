@@ -1,3 +1,5 @@
+import { apiError } from './error'
+
 const API_BASE = 'http://localhost:8000'
 
 export interface SetVoiceResult {
@@ -19,7 +21,7 @@ export async function setVoiceSample(file: File): Promise<SetVoiceResult> {
     method: 'POST',
     body: form,
   })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
+  if (!res.ok) throw await apiError(res)
   return res.json()
 }
 
@@ -31,6 +33,6 @@ export async function verifySpeaker(file: File): Promise<VerifyResult> {
     method: 'POST',
     body: form,
   })
-  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
+  if (!res.ok) throw await apiError(res)
   return res.json()
 }

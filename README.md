@@ -1,6 +1,30 @@
 # ATC-ASR Pipeline
 
-ASR for air traffic control using [`jacktol/whisper-medium.en-fine-tuned-for-ATC`](https://huggingface.co/jacktol/whisper-medium.en-fine-tuned-for-ATC).
+ASR for air traffic control. The legacy benchmark scripts use
+[`jacktol/whisper-medium.en-fine-tuned-for-ATC`](https://huggingface.co/jacktol/whisper-medium.en-fine-tuned-for-ATC);
+the mode-based API uses its current large-v3 replacement in local mode.
+
+## Backend API
+
+The FastAPI backend now has three interchangeable modes:
+
+- `demo` (default): filename-based transcriptions loaded from
+  `audio-samples/result.txt`, with no API or model calls.
+- `remote`: Gemini audio requests through Pydantic AI.
+- `local`: separate GPU models for ATC ASR, English-accent classification,
+  and speaker similarity.
+
+Start the backend with:
+
+```bash
+uv sync
+uv run uvicorn app:app --reload
+```
+
+Set `APP_MODE=demo`, `APP_MODE=remote`, or `APP_MODE=local` in `.env`. See
+[`services/README.md`](services/README.md) for mock filenames, Gemini settings,
+local optional installation, model cards, limitations, and per-file docs. The
+CUDA model dependencies are intentionally not part of the base `uv` project.
 
 ## Layout
 

@@ -42,12 +42,11 @@ class LocalBackend:
 
         with _audio_file(audio) as path:
             text = transcribe(path, self.device)
-            accent, accent_confidence = detect_accent(path, self.device)
+            accent = detect_accent(path, self.device)
         return TranscriptionResult(
             transcription=text,
             accent=accent,
             confidence=None,
-            accent_confidence=accent_confidence,
         )
 
     def verify_speaker(

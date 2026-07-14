@@ -34,12 +34,12 @@ class Settings:
 
 def _mode() -> AppMode:
     raw = os.getenv("APP_MODE", AppMode.DEMO.value).strip().lower()
+    print(raw)
     try:
         return AppMode(raw)
     except ValueError as exc:
         choices = ", ".join(mode.value for mode in AppMode)
         raise RuntimeError(f"APP_MODE must be one of: {choices}") from exc
-
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
@@ -48,7 +48,7 @@ def get_settings() -> Settings:
     if not keys and os.getenv("GOOGLE_API_KEY"):
         keys = (os.environ["GOOGLE_API_KEY"],)
 
-    return Settings(
+    setting = Settings(
         mode=_mode(),
         gemini_model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash"),
         remote_provider=os.getenv("REMOTE_PROVIDER", "google").strip().lower(),
@@ -62,3 +62,5 @@ def get_settings() -> Settings:
         local_device=os.getenv("LOCAL_DEVICE", "cuda"),
         local_speaker_threshold=float(os.getenv("LOCAL_SPEAKER_THRESHOLD", "0.25")),
     )
+    print(setting)
+    return setting
