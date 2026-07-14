@@ -60,6 +60,7 @@ class LocalBackend:
     def transcribe(self, audio: AudioInput) -> TranscriptionResult:
         from .local_accent import detect_accent
         from .local_asr import transcribe
+        from .local_confidence import estimate_transcription_confidence
 
         with _audio_file(audio) as path:
             text = transcribe(
@@ -68,10 +69,11 @@ class LocalBackend:
                 self.enrich_using_surveillance_data,
             )
             accent = detect_accent(path, self.device)
+        confidence = estimate_transcription_confidence(text, audio)
         return TranscriptionResult(
             transcription=text,
             accent=accent,
-            confidence=None,
+            confidence=confidence,
         )
 
     def verify_speaker(

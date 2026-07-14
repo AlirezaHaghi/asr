@@ -3,12 +3,36 @@
 FastAPI service and evaluation tools for air-traffic-control speech. The API
 supports lightweight demo/remote operation and an optional local GPU stack.
 
+# how to use this?
+
+## ON DEVELOPMENT AND SCRIPT FOR BATCH PROCCESSING
+
+create a directory which the .wav files exist. the run `uv python main.py`
+
+
+
+
+## ON SERVER WITH BACKEND AND FRONTEND
+
+## FRONTEND
+```powershell
+cd front
+bun install
+bun dev
+```
+use `bun dev --host=0.0.0.0` in sesrver
+application is available on port 3000
+
+
 ## Lightweight install: demo or remote
 
 ```powershell
 uv sync
 uv run uvicorn app:app --reload
 ```
+if you want to serve on the web:
+
+`uv run uvicorn app:app --reload --host=0.0.0.0`
 
 Set `APP_MODE=demo` (the default) or `APP_MODE=remote` in `.env`. A plain
 `uv sync` installs only the web, HTTP, validation, and database dependencies.
