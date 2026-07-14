@@ -1,0 +1,8 @@
+numpy>=1.26
+scipy>=1.11
+soundfile>=0.12
+torch>=2.0
+silero-vad>=5.1
+transformers>=4.35
+accelerate>=0.25
+jiwer>=3.0
