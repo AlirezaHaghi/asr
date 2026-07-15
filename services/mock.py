@@ -47,10 +47,10 @@ MOCK_TRANSCRIPTIONS = _load_transcriptions()
 
 MOCK_SPEAKER_RESULTS = {
     ("demo-reference.wav", "demo-same-speaker.wav"): SpeakerVerificationResult(
-        same_speaker=True, confidence=0.94, similarity=0.72, threshold=0.25
+        same_speaker=True, confidence=0.94
     ),
     ("demo-reference.wav", "demo-different-speaker.wav"): SpeakerVerificationResult(
-        same_speaker=False, confidence=0.91, similarity=0.08, threshold=0.25
+        same_speaker=False, confidence=0.91
     ),
 }
 
@@ -74,14 +74,8 @@ class MockBackend:
         self, reference: AudioInput, candidate: AudioInput
     ) -> SpeakerVerificationResult:
         if reference.name == candidate.name:
-            return SpeakerVerificationResult(
-                same_speaker=True, confidence=1.0, similarity=1.0, threshold=0.25
-            )
+            return SpeakerVerificationResult(same_speaker=True, confidence=1.0)
         if reference.name.split('_')[0] == candidate.name.split('_')[0]:
-            return SpeakerVerificationResult(
-                same_speaker=True, confidence=0.84, similarity=0.65, threshold=0.25
-            )
+            return SpeakerVerificationResult(same_speaker=True, confidence=0.84)
         else:
-            return SpeakerVerificationResult(
-                same_speaker=False, confidence=0.51, similarity=0.15, threshold=0.25
-            )
+            return SpeakerVerificationResult(same_speaker=False, confidence=0.51)

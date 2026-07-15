@@ -21,8 +21,6 @@ class TranscriptionResult(BaseModel):
 class SpeakerVerificationResult(BaseModel):
     same_speaker: bool
     confidence: float | None = Field(default=None, ge=0, le=1)
-    similarity: float | None = Field(default=None, ge=-1, le=1)
-    threshold: float | None = Field(default=None, ge=-1, le=1)
 
 
 class ServiceError(RuntimeError):

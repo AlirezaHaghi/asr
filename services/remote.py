@@ -14,6 +14,7 @@ from .settings import Settings
 
 
 TRANSCRIBE_URL = "http://185.204.169.44:8000/transcribe"
+VERIFY_SPEAKER_URL = "http://185.204.169.44:8000/verify-speaker"
 API_KEY = "7DJBK_iHnZpoNzdtHmuodHaF0bUhLddPuxX01qrbEdE"
 REQUEST_TIMEOUT_SECONDS = 120.0
 
@@ -63,10 +64,41 @@ class RemoteBackend:
         save_transcription(cache_key, result)
         return result
 
+    @staticmethod
+    def _request_verify_speaker(
+        reference: AudioInput, candidate: AudioInput
+    ) -> SpeakerVerificationResult:
+        try:
+            response = httpx.post(
+                VERIFY_SPEAKER_URL,
+                headers={"X-API-Key": API_KEY},
+                files={
+                    "reference": (reference.name, reference.content, reference.media_type),
+                    "candidate": (candidate.name, candidate.content, candidate.media_type),
+                },
+                timeout=REQUEST_TIMEOUT_SECONDS,
+                trust_env=False,
+            )
+        except httpx.TimeoutException as exc:
+            raise ServiceError("Remote speaker verification request timed out", 504) from exc
+        except httpx.RequestError as exc:
+            raise ServiceError("Remote speaker verification service is unavailable", 502) from exc
+
+        if not response.is_success:
+            raise ServiceError(
+                "Remote speaker verification request failed with upstream status "
+                f"{response.status_code}",
+                502,
+            )
+
+        try:
+            return SpeakerVerificationResult.model_validate(response.json())
+        except (ValueError, ValidationError) as exc:
+            raise ServiceError(
+                "Remote speaker verification service returned an invalid response", 502
+            ) from exc
+
     def verify_speaker(
         self, reference: AudioInput, candidate: AudioInput
     ) -> SpeakerVerificationResult:
-        del reference, candidate
-        raise ServiceError(
-            "Speaker verification is not available from the remote service", 501
-        )
+        return self._request_verify_speaker(reference, candidate)

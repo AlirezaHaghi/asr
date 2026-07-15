@@ -9,8 +9,6 @@ export interface SetVoiceResult {
 export interface VerifyResult {
   same_speaker: boolean
   confidence: number | null
-  similarity: number | null
-  threshold: number | null
 }
 
 export async function setVoiceSample(file: File): Promise<SetVoiceResult> {
