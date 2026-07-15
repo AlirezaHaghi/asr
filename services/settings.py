@@ -21,12 +21,6 @@ class AppMode(str, Enum):
 @dataclass(frozen=True, slots=True)
 class Settings:
     mode: AppMode
-    gemini_model: str
-    remote_provider: str
-    google_api_keys: tuple[str, ...]
-    metis_api_key: str | None
-    metis_base_url: str
-    google_proxy_url: str | None
     default_voice_sample: Path
     local_device: str
     local_speaker_threshold: float
@@ -56,19 +50,9 @@ def _environment_flag(name: str, default: bool = False) -> bool:
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    key_list = os.getenv("GOOGLE_API_KEYS", "")
-    keys = tuple(key.strip() for key in key_list.split(",") if key.strip())
-    if not keys and os.getenv("GOOGLE_API_KEY"):
-        keys = (os.environ["GOOGLE_API_KEY"],)
 
     setting = Settings(
         mode=_mode(),
-        gemini_model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash"),
-        remote_provider=os.getenv("REMOTE_PROVIDER", "google").strip().lower(),
-        google_api_keys=keys,
-        metis_api_key=os.getenv("METIS_API_KEY"),
-        metis_base_url=os.getenv("METIS_BASE_URL", "https://api.metisai.ir"),
-        google_proxy_url=os.getenv("GOOGLE_PROXY_URL"),
         default_voice_sample=Path(
             os.getenv("DEFAULT_VOICE_SAMPLE_PATH", "default_sample.wav")
         ),
