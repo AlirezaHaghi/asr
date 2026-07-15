@@ -88,7 +88,5 @@ class LocalBackend:
             similarity = compare_speakers(ref_path, candidate_path, self.device)
         return SpeakerVerificationResult(
             same_speaker=similarity > self.speaker_threshold,
-            similarity=similarity,
-            threshold=self.speaker_threshold,
             confidence=None,
         )

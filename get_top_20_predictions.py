@@ -1,9 +1,9 @@
 import glob
 import json
+import os
 results = []
 final = [{} for i in range(20)]
 
-import os
 path = os.path.join("atc_asr_output", "predictions", "predictions_run*.json")
 
 for x in glob.glob(str(path)):
