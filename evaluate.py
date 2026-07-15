@@ -3,7 +3,6 @@ import time
 from collections import Counter
 from pathlib import Path
 
-import torch
 import numpy as np
 from datasets import load_dataset
 from jiwer import wer, cer, process_words
